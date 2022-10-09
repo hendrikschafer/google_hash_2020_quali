@@ -1,10 +1,8 @@
-from parser import parse_file
+from parser import parse_file, files
 from validator import validate
 
 import random
-
-file = parse_file('a_example.txt')
-
+from tqdm import trange
 
 def random_solution(file):
     libraries = file['libraries']
@@ -15,10 +13,18 @@ def random_solution(file):
         solution[library.get_id()] = library.get_sorted_books(file['book_scores'])
     return solution
 
+def best_of_n_random_solutions(file, n):
+    max_score = 0
+    best_solution = None
+    for i in trange(n):
+        solution = random_solution(file)
+        score = validate(file, solution)
+        if score > max_score:
+            max_score = score
+            best_solution = solution
+    print(f'max_score: {max_score}')
 
+if __name__ == '__main__':
+    file = parse_file(files.c)
 
-solution = random_solution(file)
-
-print(file['book_scores'])
-print(solution)
-print(validate(file, solution))
+    best_of_n_random_solutions(file, 1000)
